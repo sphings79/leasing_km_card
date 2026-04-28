@@ -4,7 +4,7 @@
 [![HA Version](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-blue)](https://www.home-assistant.io/)
 
 Modernes Lovelace-Dashboard für die [Leasing KM-Rechner Integration](https://github.com/sphings79/km_leasing_check_ha).  
-Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer kompakten, responsiven Karte.
+Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer, Statusanzeigen und – wenn aktiviert – die Kostenberechnung in einer kompakten, responsiven Karte.
 
 ---
 
@@ -15,7 +15,8 @@ Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer k
 - **Status-Badges** (Über Soll / Im Rahmen / Limit gefährdet)
 - **Metriken-Grid** für alle Sensor-Werte
 - **Prognose-Kacheln** für Jahres- und Laufzeitende
-- **Status-Pills** für die drei Binärsensoren
+- **Kostenberechnung** – Sektion mit Prognose Abweichung, Kosten/Erstattung und konfigurierten Vertragsparametern (optional, nur wenn in der Integration aktiviert)
+- **Status-Pills** für alle Binärsensoren inkl. Toleranzgrenze
 - Automatisches **Dark / Light Theme** (nutzt HA CSS-Variablen)
 - Visueller **Card-Editor** in der UI (kein YAML-Tippen nötig)
 
@@ -26,7 +27,7 @@ Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer k
 | Anforderung | Details |
 |---|---|
 | Home Assistant | 2026.4 oder neuer |
-| Leasing KM-Rechner Integration | [→ GitHub](https://github.com/sphings79/km_leasing_check_ha) |
+| Leasing KM-Rechner Integration | v1.1.0b2 oder neuer – [→ GitHub](https://github.com/sphings79/km_leasing_check_ha) |
 
 ---
 
@@ -70,7 +71,7 @@ title: Mein Leasing-Auto
 | Parameter | Pflicht | Standard | Beschreibung |
 |---|---|---|---|
 | `entity_prefix` | ✅ | – | Präfix der Entitäten (z. B. `leasing` → `sensor.leasing_km_absolviert`) |
-| `title` | ❌ | `Leasing KM` | Titel in der Karten-Kopfzeile |
+| `title` | ❌ | Auto | Titel in der Karten-Kopfzeile |
 
 ---
 
@@ -99,7 +100,20 @@ Bei mehreren Fahrzeugen (z. B. `sensor.vw_golf_km_absolviert`) entsprechend `vw_
 | Soll-Ist | Differenz heute, Differenz Monatsende, km/Tag Ist & Soll, Noch erlaubt |
 | Prognose | Jahresende, Laufzeitende, Jahresbudget |
 | Restkilometer | Bis Jahresende, Bis Laufzeitende |
-| Status-Pills | Über Soll · Jahres-KM gefährdet · Limit überschritten |
+| Kostenberechnung ¹ | Prognose Abweichung (km), Prognose Kosten/Erstattung (€), Vertragsparameter |
+| Status-Pills | Über Soll · Jahres-KM gefährdet · Limit überschritten · Toleranz überschritten ¹ |
+
+¹ Nur sichtbar wenn die Kostenberechnung in der Leasing KM-Rechner Integration aktiviert ist.
+
+---
+
+## 💶 Kostenberechnung
+
+Die Kostenberechnung-Sektion erscheint automatisch sobald sie in der Integration aktiviert wurde. Sie zeigt:
+
+- **Prognose Abweichung** – voraussichtliche Mehr- (+) oder Minderkilometer (−) am Vertragsende
+- **Prognose Kosten/Erstattung** – errechnete Nachzahlung (+) oder Erstattung (−) in €
+- **Vertragsparameter** als Chips: Nachbelastungssatz Mehr-km, Erstattungssatz Minder-km, Toleranzgrenzen, Max. Erstattungsgrenze
 
 ---
 
@@ -122,6 +136,14 @@ title: BMW 3er
 ---
 
 ## 📝 Changelog
+
+### 1.1.0b1
+- Neue Sektion „Kostenberechnung" (wird automatisch angezeigt wenn in der Integration aktiviert)
+- Prognose Abweichung Laufzeitende in km (farblich: rot = Mehr, blau = Minder)
+- Prognose Kosten/Erstattung in € (farblich: rot = Nachzahlung, grün = Erstattung)
+- Vertragsparameter als Chips: Mehr-/Minder-Satz, Toleranzgrenzen, Erstattungsgrenze
+- Neuer Status-Pill „Toleranz überschritten" (amber/grün)
+- `fmtEur()` Hilfsfunktion für €-Formatierung mit Vorzeichen
 
 ### 1.0.0
 - Erstveröffentlichung
