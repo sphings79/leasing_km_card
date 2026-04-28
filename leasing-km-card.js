@@ -1,10 +1,11 @@
 /**
  * Leasing KM Card
  * A modern Lovelace card for the Leasing KM-Rechner integration.
- * https://github.com/sphings79/leasing-km-card
+ * Auto-discovers all leasing_km integration instances.
+ * https://github.com/sphings79/leasing_km_card
  */
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -43,9 +44,7 @@ const STYLES = `
 
   /* ── Header ── */
   .header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: flex; align-items: center; gap: 12px;
     padding: 18px 20px 14px;
     border-bottom: 1px solid var(--lkm-border);
   }
@@ -59,13 +58,12 @@ const STYLES = `
   }
   .header-icon svg { width: 20px; height: 20px; }
   .header-title { font-size: 15px; font-weight: 600; }
-  .header-sub { font-size: 12px; color: var(--lkm-text2); margin-top: 1px; }
+  .header-sub   { font-size: 12px; color: var(--lkm-text2); margin-top: 1px; }
   .header-badge {
     margin-left: auto;
     font-size: 11px; font-weight: 600;
     padding: 3px 10px;
-    border-radius: 20px;
-    border: 1px solid transparent;
+    border-radius: 20px; border: 1px solid transparent;
     white-space: nowrap;
   }
   .badge-green { background: var(--lkm-green-bg); color: var(--lkm-green); border-color: rgba(74,222,128,0.2); }
@@ -74,27 +72,17 @@ const STYLES = `
 
   /* ── Gauge ── */
   .gauge-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
     padding: 20px 20px 0;
   }
   .gauge-svg { width: 220px; height: 130px; overflow: visible; }
   .gauge-track { fill: none; stroke: var(--lkm-bg3); stroke-width: 16; stroke-linecap: round; }
-  .gauge-green { fill: none; stroke: var(--lkm-green); stroke-width: 16; stroke-linecap: round; transition: stroke-dashoffset 0.7s ease; }
-  .gauge-red   { fill: none; stroke: var(--lkm-red);   stroke-width: 16; stroke-linecap: round; transition: stroke-dashoffset 0.7s ease; }
-  .gauge-needle { stroke: var(--lkm-text); stroke-width: 3; stroke-linecap: round; transition: transform 0.7s ease; transform-origin: 110px 110px; }
-  .gauge-center { fill: var(--lkm-accent); }
-  .gauge-center-dot { fill: white; }
-  .gauge-val { font-size: 28px; font-weight: 700; fill: var(--lkm-text); text-anchor: middle; }
-  .gauge-unit { font-size: 12px; fill: var(--lkm-text2); text-anchor: middle; }
-  .gauge-label-l { font-size: 10px; fill: var(--lkm-text3); text-anchor: middle; }
-  .gauge-label-r { font-size: 10px; fill: var(--lkm-text3); text-anchor: middle; }
+  .gauge-val   { font-size: 28px; font-weight: 700; fill: var(--lkm-text); text-anchor: middle; }
+  .gauge-unit  { font-size: 9px; fill: var(--lkm-text2); text-anchor: middle; }
+  .gauge-label { font-size: 10px; fill: var(--lkm-text3); }
 
   /* ── Progress bar ── */
-  .progress-section {
-    padding: 14px 20px;
-  }
+  .progress-section { padding: 14px 20px; }
   .progress-row {
     display: flex; justify-content: space-between; align-items: baseline;
     margin-bottom: 6px;
@@ -103,8 +91,7 @@ const STYLES = `
   .progress-value { font-size: 12px; font-weight: 600; color: var(--lkm-text); }
   .bar-wrap {
     position: relative; height: 8px;
-    background: var(--lkm-bg3);
-    border-radius: 4px; overflow: hidden;
+    background: var(--lkm-bg3); border-radius: 4px; overflow: hidden;
     margin-bottom: 10px;
   }
   .bar-soll {
@@ -125,27 +112,18 @@ const STYLES = `
     margin-top: -6px; margin-bottom: 10px;
   }
 
-  /* ── Separator ── */
-  .sep {
-    border: none;
-    border-top: 1px solid var(--lkm-border);
-    margin: 0 20px;
-  }
-
-  /* ── Section label ── */
+  /* ── Separator / Section ── */
+  .sep { border: none; border-top: 1px solid var(--lkm-border); margin: 0 20px; }
   .section-label {
-    font-size: 10px; font-weight: 600;
-    color: var(--lkm-text3);
+    font-size: 10px; font-weight: 600; color: var(--lkm-text3);
     text-transform: uppercase; letter-spacing: 0.09em;
     padding: 14px 20px 8px;
   }
 
   /* ── Metric grid ── */
   .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 0 20px 14px;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 8px; padding: 0 20px 14px;
   }
   .metric-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
   .metric {
@@ -154,63 +132,44 @@ const STYLES = `
     border-radius: var(--lkm-radius-sm);
     padding: 11px 12px;
   }
-  .metric-label {
-    font-size: 10px; color: var(--lkm-text2);
-    margin-bottom: 4px; line-height: 1.3;
-  }
-  .metric-value {
-    font-size: 18px; font-weight: 600;
-    color: var(--lkm-text); line-height: 1.15;
-  }
+  .metric-label { font-size: 10px; color: var(--lkm-text2); margin-bottom: 4px; line-height: 1.3; }
+  .metric-value { font-size: 18px; font-weight: 600; color: var(--lkm-text); line-height: 1.15; }
   .metric-value.green { color: var(--lkm-green); }
   .metric-value.red   { color: var(--lkm-red); }
   .metric-value.amber { color: var(--lkm-amber); }
-  .metric-sub { font-size: 10px; color: var(--lkm-text3); margin-top: 2px; }
+  .metric-sub   { font-size: 10px; color: var(--lkm-text3); margin-top: 2px; }
 
-  /* ── Status strip ── */
-  .status-strip {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    padding: 0 20px 16px;
-  }
+  /* ── Status pills ── */
+  .status-strip { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 20px 16px; }
   .status-pill {
     display: flex; align-items: center; gap: 5px;
     font-size: 11px; font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 20px; border: 1px solid transparent;
+    padding: 4px 10px; border-radius: 20px; border: 1px solid transparent;
   }
-  .pill-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%; flex-shrink: 0;
-  }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .pill-green { background: var(--lkm-green-bg); color: var(--lkm-green); border-color: rgba(74,222,128,0.2); }
   .pill-green .pill-dot { background: var(--lkm-green); }
   .pill-red   { background: var(--lkm-red-bg);   color: var(--lkm-red);   border-color: rgba(248,113,113,0.2); }
   .pill-red   .pill-dot { background: var(--lkm-red); }
-  .pill-neutral { background: var(--lkm-bg2);    color: var(--lkm-text2); border-color: var(--lkm-border); }
 
   /* ── Footer ── */
   .footer {
     padding: 10px 20px 14px;
     font-size: 10px; color: var(--lkm-text3);
-    text-align: center;
-    border-top: 1px solid var(--lkm-border);
+    text-align: center; border-top: 1px solid var(--lkm-border);
   }
 
-  /* ── Error / loading ── */
+  /* ── State messages ── */
   .state-msg {
-    padding: 32px 20px;
-    text-align: center;
-    color: var(--lkm-text2);
-    font-size: 13px;
-    line-height: 1.6;
+    padding: 32px 20px; text-align: center;
+    color: var(--lkm-text2); font-size: 13px; line-height: 1.6;
   }
   .state-msg .icon { font-size: 32px; display: block; margin-bottom: 8px; }
 
   /* ── Editor ── */
   .editor { padding: 16px; }
   .editor label {
-    display: block;
-    font-size: 12px; color: var(--secondary-text-color);
+    display: block; font-size: 12px; color: var(--secondary-text-color);
     margin-bottom: 4px; margin-top: 14px;
   }
   .editor label:first-of-type { margin-top: 0; }
@@ -218,60 +177,79 @@ const STYLES = `
     width: 100%; padding: 8px 10px;
     background: var(--secondary-background-color);
     border: 1px solid var(--divider-color);
-    border-radius: 6px;
-    color: var(--primary-text-color);
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
+    border-radius: 6px; color: var(--primary-text-color);
+    font-size: 13px; font-family: inherit; outline: none;
   }
-  .editor input:focus, .editor select:focus {
-    border-color: var(--accent-color);
+  .editor input:focus, .editor select:focus { border-color: var(--accent-color); }
+  .editor .hint {
+    font-size: 11px; color: var(--secondary-text-color);
+    margin-top: 4px; opacity: 0.7;
   }
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const fmtN   = (n, dec = 0) => (typeof n === "number" ? n.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec }) : "–");
-const sign   = (n) => (n > 0 ? "+" : "");
-const clamp  = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+const fmtN  = (n, dec = 0) =>
+  typeof n === "number"
+    ? n.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec })
+    : "–";
+const sign  = (n) => (n > 0 ? "+" : "");
+const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
-function getState(hass, entityId) {
-  if (!entityId || !hass.states[entityId]) return null;
-  const s = hass.states[entityId].state;
+function getState(hass, eid) {
+  if (!eid || !hass.states[eid]) return null;
+  const s = hass.states[eid].state;
   if (["unavailable", "unknown", ""].includes(s)) return null;
   return parseFloat(s);
 }
-
-function getBool(hass, entityId) {
-  if (!entityId || !hass.states[entityId]) return null;
-  return hass.states[entityId].state === "on";
+function getBool(hass, eid) {
+  if (!eid || !hass.states[eid]) return null;
+  return hass.states[eid].state === "on";
+}
+function getAttr(hass, eid, attr) {
+  if (!eid || !hass.states[eid]) return null;
+  return hass.states[eid].attributes?.[attr] ?? null;
 }
 
-function getAttr(hass, entityId, attr) {
-  if (!entityId || !hass.states[entityId]) return null;
-  return hass.states[entityId].attributes?.[attr] ?? null;
+/**
+ * Auto-discover all leasing_km integration instances.
+ * Scans hass.states for sensors ending with _km_absolviert
+ * and returns an array of { prefix, label } objects.
+ */
+function discoverInstances(hass) {
+  const SUFFIX = "_km_absolviert";
+  return Object.keys(hass.states)
+    .filter(
+      (eid) =>
+        eid.startsWith("sensor.") &&
+        eid.endsWith(SUFFIX) &&
+        hass.states[eid].attributes?.unit_of_measurement === "%"
+    )
+    .map((eid) => {
+      const prefix = eid.slice("sensor.".length, -SUFFIX.length);
+      const label  =
+        hass.states[eid].attributes?.friendly_name
+          ?.replace(" KM absolviert", "")
+          ?.replace(" km_absolviert", "")
+          ?.trim() || prefix;
+      return { prefix, label };
+    });
 }
 
 // ─── Gauge arc helper ─────────────────────────────────────────────────────────
 
-/**
- * Generates a semicircular arc SVG path.
- * cx=110, cy=110, r=90 → arc from 180° to 0° (left to right across top)
- */
 function arcPath(cx, cy, r, startDeg, endDeg) {
-  const toRad = (d) => (d * Math.PI) / 180;
-  const x1 = cx + r * Math.cos(toRad(startDeg));
-  const y1 = cy + r * Math.sin(toRad(startDeg));
-  const x2 = cx + r * Math.cos(toRad(endDeg));
-  const y2 = cy + r * Math.sin(toRad(endDeg));
-  const large = endDeg - startDeg > 180 ? 1 : 0;
-  return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+  const rad = (d) => (d * Math.PI) / 180;
+  const x1 = cx + r * Math.cos(rad(startDeg));
+  const y1 = cy + r * Math.sin(rad(startDeg));
+  const x2 = cx + r * Math.cos(rad(endDeg));
+  const y2 = cy + r * Math.sin(rad(endDeg));
+  return `M ${x1} ${y1} A ${r} ${r} 0 ${endDeg - startDeg > 180 ? 1 : 0} 1 ${x2} ${y2}`;
 }
 
-// Arc spans from 180° to 360° (semicircle)
 const ARC_START = 180;
 const ARC_END   = 360;
-const ARC_RANGE = ARC_END - ARC_START; // 180°
+const ARC_RANGE = 180;
 
 // ─── Card class ───────────────────────────────────────────────────────────────
 
@@ -282,148 +260,131 @@ class LeasingKmCard extends HTMLElement {
     this._config = {};
   }
 
-  // ── HACS / HA registration ────────────────────────────────────────────────
-
   static getConfigElement() {
     return document.createElement("leasing-km-card-editor");
   }
 
-  static getStubConfig() {
-    return { entity_prefix: "leasing" };
+  static getStubConfig(hass) {
+    // Pre-fill with first discovered instance if possible
+    if (hass) {
+      const instances = discoverInstances(hass);
+      if (instances.length > 0) return { entity_prefix: instances[0].prefix };
+    }
+    return { entity_prefix: "" };
   }
 
-  // ── Config ────────────────────────────────────────────────────────────────
-
   setConfig(config) {
-    if (!config.entity_prefix) {
-      throw new Error("Bitte entity_prefix angeben (z. B. 'leasing' für sensor.leasing_…)");
-    }
     this._config = config;
     this._render();
   }
-
-  // ── HA state update ───────────────────────────────────────────────────────
 
   set hass(hass) {
     this._hass = hass;
     this._render();
   }
 
-  // ── Entity id builder ─────────────────────────────────────────────────────
+  _s(key) { return `sensor.${this._config.entity_prefix}_${key}`; }
+  _b(key) { return `binary_sensor.${this._config.entity_prefix}_${key}`; }
 
-  _s(key)  { return `sensor.${this._config.entity_prefix}_${key}`; }
-  _b(key)  { return `binary_sensor.${this._config.entity_prefix}_${key}`; }
+  _renderContent(root, style) {
+    const hass = this._hass;
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
-  _render() {
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const style = document.createElement("style");
-    style.textContent = STYLES;
-
-    const title    = this._config.title || "Leasing KM";
-    const hass     = this._hass;
-
-    if (!hass) {
+    // ── No prefix configured yet ────────────────────────────────────────────
+    if (!this._config.entity_prefix) {
+      const instances = discoverInstances(hass);
       root.innerHTML = "";
       root.appendChild(style);
-      const __el = document.createElement("div"); __el.innerHTML = `
-        <ha-card>
-          <div class="card">
-            <div class="state-msg"><span class="icon">🚗</span>Lade …</div>
-          </div>
-        </ha-card>`;
-    root.appendChild(__el);
+      const el = document.createElement("div");
+      if (instances.length === 0) {
+        el.innerHTML = `<ha-card><div class="card"><div class="state-msg">
+          <span class="icon">🔌</span>
+          Keine Leasing KM-Instanz gefunden.<br>
+          Bitte zuerst die <b>Leasing KM-Rechner</b> Integration einrichten.
+        </div></div></ha-card>`;
+      } else {
+        // Auto-select first instance and re-render
+        this._config = { ...this._config, entity_prefix: instances[0].prefix };
+        this._render();
+        return;
+      }
+      root.appendChild(el);
       return;
     }
 
-    // ── Read entities ────────────────────────────────────────────────────────
-    const p = this._config.entity_prefix;
-
-    const kmAkt      = getState(hass, this._s("tagesleistung_ist"))  // we use attrs from diff sensor
-      // fallback: read from attributes of diff sensor
-      ;
-    const istDay     = getState(hass, this._s("tagesleistung_ist"));
-    const sollDay    = getState(hass, this._s("tagesleistung_soll"));
-    const sollHeute  = getState(hass, this._s("soll_km_heute"));
-    const diffHeute  = getState(hass, this._s("differenz_heute"));
-    const sollMon    = getState(hass, this._s("soll_km_monatsende"));
-    const diffMon    = getState(hass, this._s("differenz_monatsende"));
-    const verblJahr  = getState(hass, this._s("verbleibend_bis_jahresende"));
-    const verblEnd   = getState(hass, this._s("verbleibend_bis_laufzeitende"));
-    const nochErl    = getState(hass, this._s("noch_erlaubt_gesamt"));
-    const jahresSoll = getState(hass, this._s("km_limit_pro_jahr"));
-    const progJahr   = getState(hass, this._s("prognose_jahresende"));
-    const progEnd    = getState(hass, this._s("prognose_laufzeitende"));
-    const kmPct      = getState(hass, this._s("km_absolviert"));
-    const laufPct    = getState(hass, this._s("laufzeit_absolviert"));
+    // ── Read all entity values ───────────────────────────────────────────────
+    const istDay    = getState(hass, this._s("tagesleistung_ist"));
+    const sollDay   = getState(hass, this._s("tagesleistung_soll"));
+    const sollHeute = getState(hass, this._s("soll_km_heute"));
+    const diffHeute = getState(hass, this._s("differenz_heute"));
+    const sollMon   = getState(hass, this._s("soll_km_monatsende"));
+    const diffMon   = getState(hass, this._s("differenz_monatsende"));
+    const verblJahr = getState(hass, this._s("verbleibend_bis_jahresende"));
+    const verblEnd  = getState(hass, this._s("verbleibend_bis_laufzeitende"));
+    const nochErl   = getState(hass, this._s("noch_erlaubt_gesamt"));
+    const jahresSoll= getState(hass, this._s("km_limit_pro_jahr"));
+    const progJahr  = getState(hass, this._s("prognose_jahresende"));
+    const progEnd   = getState(hass, this._s("prognose_laufzeitende"));
+    const kmPct     = getState(hass, this._s("km_absolviert"));
+    const laufPct   = getState(hass, this._s("laufzeit_absolviert"));
 
     const isOverSoll = getBool(hass, this._b("ueber_soll"));
     const jahresOver = getBool(hass, this._b("jahres_km_prognose_ueberschritten"));
     const endeOver   = getBool(hass, this._b("laufzeit_km_prognose_ueberschritten"));
 
-    // extra attrs
-    const vertragsende  = getAttr(hass, this._s("differenz_heute"), "vertragsende") || "–";
-    const elapsedDays   = getAttr(hass, this._s("differenz_heute"), "elapsed_days");
-    const totalDays     = getAttr(hass, this._s("differenz_heute"), "total_days");
+    const vertragsende = getAttr(hass, this._s("differenz_heute"), "vertragsende") || null;
+    const elapsedDays  = getAttr(hass, this._s("differenz_heute"), "elapsed_days");
+    const totalDays    = getAttr(hass, this._s("differenz_heute"), "total_days");
 
-    // Check if integration data is available at all
+    // ── No data found → show helpful error with actual discovered entities ───
     if (kmPct === null && laufPct === null && sollHeute === null) {
+      const instances = discoverInstances(hass);
       root.innerHTML = "";
       root.appendChild(style);
-      const __el = document.createElement("div"); __el.innerHTML = `
-        <ha-card>
-          <div class="card">
-            <div class="state-msg">
-              <span class="icon">🔌</span>
-              Keine Daten gefunden.<br>
-              Bitte <b>entity_prefix</b> prüfen:<br>
-              <code style="font-size:11px;opacity:.7">sensor.<b>${p}</b>_km_absolviert</code>
-            </div>
-          </div>
-        </ha-card>`;
-    root.appendChild(__el);
+      const el = document.createElement("div");
+      el.innerHTML = `<ha-card><div class="card"><div class="state-msg">
+        <span class="icon">🔌</span>
+        Prefix <code style="font-size:11px">${this._config.entity_prefix}</code> nicht gefunden.<br><br>
+        ${instances.length > 0
+          ? `Gefundene Instanzen:<br>${instances.map(i =>
+              `<code style="font-size:11px;cursor:pointer;text-decoration:underline">${i.prefix}</code>`
+            ).join("<br>")}<br><br>Bitte Karte neu konfigurieren.`
+          : "Keine Leasing KM-Instanz in Home Assistant gefunden."}
+      </div></div></ha-card>`;
+      root.appendChild(el);
       return;
     }
 
-    // ── Gauge values ─────────────────────────────────────────────────────────
+    // ── Gauge ────────────────────────────────────────────────────────────────
     const istP  = clamp(kmPct   ?? 0, 0, 100);
     const sollP = clamp(laufPct ?? 0, 0, 100);
     const over  = isOverSoll ?? (diffHeute !== null ? diffHeute > 0 : false);
-    const gaugeColor = over ? "var(--lkm-red)" : "var(--lkm-green)";
 
-    // Needle angle: maps 0–100% to 180°–360°
-    const needleDeg = ARC_START + (istP / 100) * ARC_RANGE;
-    // Needle endpoint (r=72)
-    const needleRad = (needleDeg * Math.PI) / 180;
+    const gaugeColor = over ? "var(--lkm-red)" : "var(--lkm-green)";
+    const needleDeg  = ARC_START + (istP / 100) * ARC_RANGE;
+    const needleRad  = (needleDeg * Math.PI) / 180;
     const nx = 110 + 72 * Math.cos(needleRad);
     const ny = 110 + 72 * Math.sin(needleRad);
-
-    // Arc path for gauge fill (green/red) — istP %
-    const arcFillEnd = ARC_START + (istP / 100) * ARC_RANGE;
+    const arcFillEnd  = ARC_START + (istP  / 100) * ARC_RANGE;
+    const arcSollEnd  = ARC_START + (sollP / 100) * ARC_RANGE;
     const arcFillPath = arcPath(110, 110, 90, ARC_START, arcFillEnd);
-    const arcTrackPath = arcPath(110, 110, 90, ARC_START, ARC_END);
+    const arcTrackPath= arcPath(110, 110, 90, ARC_START, ARC_END);
+    const sollRad = (arcSollEnd * Math.PI) / 180;
+    const sm1x = 110 + 83 * Math.cos(sollRad), sm1y = 110 + 83 * Math.sin(sollRad);
+    const sm2x = 110 + 97 * Math.cos(sollRad), sm2y = 110 + 97 * Math.sin(sollRad);
 
-    // Soll marker position
-    const sollDeg = ARC_START + (sollP / 100) * ARC_RANGE;
-    const sollRad = (sollDeg * Math.PI) / 180;
-    const sm1x = 110 + 83 * Math.cos(sollRad);
-    const sm1y = 110 + 83 * Math.sin(sollRad);
-    const sm2x = 110 + 97 * Math.cos(sollRad);
-    const sm2y = 110 + 97 * Math.sin(sollRad);
-
-    // ── Badge ────────────────────────────────────────────────────────────────
+    // ── Badge + title ────────────────────────────────────────────────────────
+    const title      = this._config.title ||
+      (hass.states[this._s("km_absolviert")]?.attributes?.friendly_name
+        ?.replace(" KM absolviert", "") || "Leasing KM");
     const badgeClass = endeOver ? "badge-red" : over ? "badge-amber" : "badge-green";
     const badgeText  = endeOver ? "⚠ Limit gefährdet" : over ? "▲ Über Soll" : "✓ Im Rahmen";
+    const vtEnd      = vertragsende ? new Date(vertragsende).toLocaleDateString("de-DE") : "–";
+    const solljahr   = jahresSoll ? jahresSoll * (laufPct ?? 0) / 100 * (12 / 12) : null;
 
-    // ── HTML ─────────────────────────────────────────────────────────────────
     const html = `
       <ha-card>
         <div class="card">
 
-          <!-- Header -->
           <div class="header">
             <div class="header-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -433,64 +394,44 @@ class LeasingKmCard extends HTMLElement {
             </div>
             <div>
               <div class="header-title">${title}</div>
-              <div class="header-sub">Vertragsende ${vertragsende !== "–" ? new Date(vertragsende).toLocaleDateString("de-DE") : "–"}</div>
+              <div class="header-sub">Vertragsende ${vtEnd}</div>
             </div>
             <span class="header-badge ${badgeClass}">${badgeText}</span>
           </div>
 
-          <!-- Gauge -->
           <div class="gauge-wrap">
             <svg class="gauge-svg" viewBox="0 40 220 100">
-
-              <!-- Track -->
               <path class="gauge-track" d="${arcTrackPath}"/>
-
-              <!-- Fill arc -->
-              <path d="${arcFillPath}" fill="none" stroke="${gaugeColor}" stroke-width="16" stroke-linecap="round"
-                style="transition: stroke-dashoffset 0.7s ease;"/>
-
-              <!-- Soll marker -->
+              <path d="${arcFillPath}" fill="none" stroke="${gaugeColor}" stroke-width="16" stroke-linecap="round"/>
               <line x1="${sm1x}" y1="${sm1y}" x2="${sm2x}" y2="${sm2y}"
                 stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
-
-              <!-- Labels -->
-              <text x="22" y="122" class="gauge-label-l">0 km</text>
-              <text x="198" y="122" class="gauge-label-r" text-anchor="end">100 %</text>
-
-              <!-- Needle -->
+              <text x="22"  y="122" class="gauge-label" text-anchor="middle">0%</text>
+              <text x="198" y="122" class="gauge-label" text-anchor="end">100%</text>
               <line x1="110" y1="110" x2="${nx}" y2="${ny}"
                 stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round"/>
-
-              <!-- Center -->
-              <circle cx="110" cy="110" r="8" class="gauge-center"/>
-              <circle cx="110" cy="110" r="3.5" class="gauge-center-dot"/>
-
-              <!-- Value text -->
+              <circle cx="110" cy="110" r="8" fill="var(--lkm-accent)"/>
+              <circle cx="110" cy="110" r="3.5" fill="white"/>
               <text x="110" y="100" class="gauge-val">${fmtN(istP, 1)} %</text>
-              <text x="110" y="112" class="gauge-unit" style="font-size:9px;fill:var(--lkm-text2)">KM absolviert · Soll: ${fmtN(sollP, 1)} %</text>
+              <text x="110" y="112" class="gauge-unit">KM absolviert · Soll: ${fmtN(sollP, 1)} %</text>
             </svg>
           </div>
 
-          <!-- Progress bars -->
           <div class="progress-section">
-            <!-- KM progress -->
             <div class="progress-row">
               <span class="progress-label">KM-Fortschritt</span>
-              <span class="progress-value">${fmtN(istP, 1)} %</span>
+              <span class="progress-value">${fmtN(istP, 1)} % von 100 %</span>
             </div>
             <div class="bar-wrap">
               <div class="bar-soll ${over ? "bar-bad" : "bar-ok"}" style="width:${sollP}%"></div>
               <div class="bar-ist  ${over ? "bar-bad" : "bar-ok"}" style="width:${istP}%"></div>
             </div>
             <div class="bar-sub">
-              <span>Soll: ${fmtN(sollP, 1)} % (${fmtN(laufPct, 1)} % Laufzeit)</span>
+              <span>Soll: ${fmtN(sollP, 1)} % (Laufzeit: ${fmtN(laufPct, 1)} %)</span>
               <span>${elapsedDays !== null ? `${elapsedDays} / ${totalDays} Tage` : ""}</span>
             </div>
           </div>
 
           <hr class="sep">
-
-          <!-- Soll-Ist -->
           <div class="section-label">Soll-Ist-Vergleich</div>
           <div class="metric-grid">
             <div class="metric">
@@ -510,14 +451,12 @@ class LeasingKmCard extends HTMLElement {
             </div>
             <div class="metric">
               <div class="metric-label">Noch erlaubt</div>
-              <div class="metric-value ${(nochErl ?? 1) < 5000 ? "amber" : ""}">${fmtN(nochErl)} km</div>
+              <div class="metric-value ${(nochErl ?? 9999) < 5000 ? "amber" : ""}">${fmtN(nochErl)} km</div>
               <div class="metric-sub">bis Vertragsende</div>
             </div>
           </div>
 
           <hr class="sep">
-
-          <!-- Prognose -->
           <div class="section-label">Prognose</div>
           <div class="metric-grid cols3">
             <div class="metric">
@@ -531,15 +470,13 @@ class LeasingKmCard extends HTMLElement {
               <div class="metric-sub">${endeOver ? "▲ über Limit" : "✓ im Rahmen"}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Soll/Jahr</div>
+              <div class="metric-label">Soll / Jahr</div>
               <div class="metric-value">${fmtN(jahresSoll)} km</div>
               <div class="metric-sub">Jahresbudget</div>
             </div>
           </div>
 
           <hr class="sep">
-
-          <!-- Restkilometer -->
           <div class="section-label">Verbleibend (Soll-Basis)</div>
           <div class="metric-grid">
             <div class="metric">
@@ -550,11 +487,10 @@ class LeasingKmCard extends HTMLElement {
             <div class="metric">
               <div class="metric-label">Bis Laufzeitende</div>
               <div class="metric-value">${fmtN(verblEnd)} km</div>
-              <div class="metric-sub">${vertragsende !== "–" ? new Date(vertragsende).toLocaleDateString("de-DE") : "–"}</div>
+              <div class="metric-sub">${vtEnd}</div>
             </div>
           </div>
 
-          <!-- Status pills -->
           <div class="status-strip">
             <span class="status-pill ${over ? "pill-red" : "pill-green"}">
               <span class="pill-dot"></span>${over ? "Über Tages-Soll" : "Unter Tages-Soll"}
@@ -567,9 +503,8 @@ class LeasingKmCard extends HTMLElement {
             </span>
           </div>
 
-          <!-- Footer -->
           <div class="footer">
-            Leasing KM-Rechner v${VERSION} · Aktualisiert: ${new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+            Leasing KM Card v${VERSION} · ${new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
           </div>
 
         </div>
@@ -578,15 +513,34 @@ class LeasingKmCard extends HTMLElement {
 
     root.innerHTML = "";
     root.appendChild(style);
-    const __el = document.createElement("div"); __el.innerHTML = html; root.appendChild(__el);
+    const el = document.createElement("div");
+    el.innerHTML = html;
+    root.appendChild(el);
   }
 
-  // ── Card size hint ────────────────────────────────────────────────────────
+  _render() {
+    const root = this.shadowRoot;
+    if (!root) return;
+
+    const style = document.createElement("style");
+    style.textContent = STYLES;
+
+    if (!this._hass) {
+      root.innerHTML = "";
+      root.appendChild(style);
+      const el = document.createElement("div");
+      el.innerHTML = `<ha-card><div class="card"><div class="state-msg"><span class="icon">🚗</span>Lade …</div></div></ha-card>`;
+      root.appendChild(el);
+      return;
+    }
+
+    this._renderContent(root, style);
+  }
 
   getCardSize() { return 10; }
 }
 
-// ─── Editor element ───────────────────────────────────────────────────────────
+// ─── Editor ───────────────────────────────────────────────────────────────────
 
 class LeasingKmCardEditor extends HTMLElement {
   constructor() {
@@ -602,48 +556,55 @@ class LeasingKmCardEditor extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+    this._render();
   }
 
   _render() {
-    const root = this.shadowRoot;
-    const style = document.createElement("style");
+    const root   = this.shadowRoot;
+    const hass   = this._hass;
+    const style  = document.createElement("style");
     style.textContent = STYLES;
     root.innerHTML = "";
     root.appendChild(style);
-    const __el = document.createElement("div"); __el.innerHTML = `
-      <div class="editor">
-        <label>Titel</label>
-        <input id="title" type="text" placeholder="Leasing KM" value="${this._config.title || ""}">
 
-        <label>Entity Prefix <span style="opacity:.6">(Pflicht)</span></label>
-        <input id="entity_prefix" type="text"
-          placeholder="z. B. leasing → sensor.leasing_km_absolviert"
-          value="${this._config.entity_prefix || ""}">
+    // Discover instances for dropdown
+    const instances = hass ? discoverInstances(hass) : [];
+    const current   = this._config.entity_prefix || "";
+
+    const optionsHtml = instances.length > 0
+      ? instances.map(i =>
+          `<option value="${i.prefix}" ${i.prefix === current ? "selected" : ""}>${i.label} (${i.prefix})</option>`
+        ).join("")
+      : `<option value="${current}">${current || "– keine Instanz gefunden –"}</option>`;
+
+    const el = document.createElement("div");
+    el.innerHTML = `
+      <div class="editor">
+        <label>Leasing-Instanz</label>
+        <select id="entity_prefix">${optionsHtml}</select>
+        <div class="hint">Automatisch erkannte Leasing KM-Rechner Instanzen</div>
+
+        <label>Titel (optional)</label>
+        <input id="title" type="text" placeholder="Wird automatisch befüllt" value="${this._config.title || ""}">
       </div>
     `;
-    root.appendChild(__el);
+    root.appendChild(el);
 
     const fire = () => {
-      const ev = new CustomEvent("config-changed", {
-        detail: {
-          config: {
-            ...this._config,
-            title:         root.getElementById("title").value || undefined,
-            entity_prefix: root.getElementById("entity_prefix").value,
-          },
-        },
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(ev);
+      const val = root.getElementById("entity_prefix").value;
+      const ttl = root.getElementById("title").value;
+      this.dispatchEvent(new CustomEvent("config-changed", {
+        detail: { config: { ...this._config, entity_prefix: val, title: ttl || undefined } },
+        bubbles: true, composed: true,
+      }));
     };
 
+    root.getElementById("entity_prefix").addEventListener("change", fire);
     root.getElementById("title").addEventListener("input", fire);
-    root.getElementById("entity_prefix").addEventListener("input", fire);
   }
 }
 
-// ─── Register elements ────────────────────────────────────────────────────────
+// ─── Register ─────────────────────────────────────────────────────────────────
 
 customElements.define("leasing-km-card", LeasingKmCard);
 customElements.define("leasing-km-card-editor", LeasingKmCardEditor);
@@ -652,9 +613,9 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type:        "leasing-km-card",
   name:        "Leasing KM Card",
-  description: "Modernes Dashboard für die Leasing KM-Rechner Integration",
+  description: "Modernes Dashboard für die Leasing KM-Rechner Integration – mit automatischer Instanz-Erkennung",
   preview:     true,
-  documentationURL: "https://github.com/sphings79/leasing-km-card",
+  documentationURL: "https://github.com/sphings79/leasing_km_card",
 });
 
 console.info(
