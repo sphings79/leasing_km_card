@@ -3,7 +3,7 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![HA Version](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-blue)](https://www.home-assistant.io/)
 
-Modernes Lovelace-Dashboard für die [Leasing KM-Rechner Integration](https://github.com/sphings79/leasing-km).  
+Modernes Lovelace-Dashboard für die [Leasing KM-Rechner Integration](https://github.com/sphings79/km_leasing_check_ha).  
 Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer kompakten, responsiven Karte.
 
 ---
@@ -26,7 +26,7 @@ Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer k
 | Anforderung | Details |
 |---|---|
 | Home Assistant | 2026.4 oder neuer |
-| Leasing KM-Rechner Integration | [→ GitHub](https://github.com/sphings79/leasing-km) |
+| Leasing KM-Rechner Integration | [→ GitHub](https://github.com/sphings79/km_leasing_check_ha) |
 
 ---
 
