@@ -1,0 +1,6 @@
+{
+  "name": "Leasing KM Card",
+  "render_readme": true,
+  "hide_default_branch": true,
+  "homeassistant": "2026.4.0"
+}
