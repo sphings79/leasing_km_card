@@ -329,12 +329,13 @@ class LeasingKmCard extends HTMLElement {
     if (!hass) {
       root.innerHTML = "";
       root.appendChild(style);
-      root.insertAdjacentHTML("beforeend", `
+      const __el = document.createElement("div"); __el.innerHTML = `
         <ha-card>
           <div class="card">
             <div class="state-msg"><span class="icon">🚗</span>Lade …</div>
           </div>
-        </ha-card>`);
+        </ha-card>`;
+    root.appendChild(__el);
       return;
     }
 
@@ -372,7 +373,7 @@ class LeasingKmCard extends HTMLElement {
     if (kmPct === null && laufPct === null && sollHeute === null) {
       root.innerHTML = "";
       root.appendChild(style);
-      root.insertAdjacentHTML("beforeend", `
+      const __el = document.createElement("div"); __el.innerHTML = `
         <ha-card>
           <div class="card">
             <div class="state-msg">
@@ -382,7 +383,8 @@ class LeasingKmCard extends HTMLElement {
               <code style="font-size:11px;opacity:.7">sensor.<b>${p}</b>_km_absolviert</code>
             </div>
           </div>
-        </ha-card>`);
+        </ha-card>`;
+    root.appendChild(__el);
       return;
     }
 
@@ -576,7 +578,7 @@ class LeasingKmCard extends HTMLElement {
 
     root.innerHTML = "";
     root.appendChild(style);
-    root.insertAdjacentHTML("beforeend", html);
+    const __el = document.createElement("div"); __el.innerHTML = html; root.appendChild(__el);
   }
 
   // ── Card size hint ────────────────────────────────────────────────────────
@@ -608,7 +610,7 @@ class LeasingKmCardEditor extends HTMLElement {
     style.textContent = STYLES;
     root.innerHTML = "";
     root.appendChild(style);
-    root.insertAdjacentHTML("beforeend", `
+    const __el = document.createElement("div"); __el.innerHTML = `
       <div class="editor">
         <label>Titel</label>
         <input id="title" type="text" placeholder="Leasing KM" value="${this._config.title || ""}">
@@ -618,7 +620,8 @@ class LeasingKmCardEditor extends HTMLElement {
           placeholder="z. B. leasing → sensor.leasing_km_absolviert"
           value="${this._config.entity_prefix || ""}">
       </div>
-    `);
+    `;
+    root.appendChild(__el);
 
     const fire = () => {
       const ev = new CustomEvent("config-changed", {
