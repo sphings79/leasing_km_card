@@ -1,5 +1,6 @@
 {
   "name": "Leasing KM Card",
+  "filename": "leasing-km-card.js",
   "render_readme": true,
   "hide_default_branch": true,
   "homeassistant": "2026.4.0"
