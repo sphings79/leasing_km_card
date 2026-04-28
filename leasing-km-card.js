@@ -5,7 +5,7 @@
  * https://github.com/sphings79/leasing_km_card
  */
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.0b1";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -17,6 +17,8 @@ const STYLES = `
     --lkm-red-bg:     rgba(248,113,113,0.12);
     --lkm-amber:      #fbbf24;
     --lkm-amber-bg:   rgba(251,191,36,0.12);
+    --lkm-blue:       #60a5fa;
+    --lkm-blue-bg:    rgba(96,165,250,0.12);
     --lkm-accent:     #6366f1;
     --lkm-accent2:    rgba(99,102,241,0.15);
     --lkm-bg:         var(--card-background-color, #1e2333);
@@ -137,7 +139,23 @@ const STYLES = `
   .metric-value.green { color: var(--lkm-green); }
   .metric-value.red   { color: var(--lkm-red); }
   .metric-value.amber { color: var(--lkm-amber); }
+  .metric-value.blue  { color: var(--lkm-blue); }
   .metric-sub   { font-size: 10px; color: var(--lkm-text3); margin-top: 2px; }
+
+  /* ── Kosten config row ── */
+  .kosten-cfg {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 0 20px 14px;
+  }
+  .kosten-cfg-chip {
+    font-size: 10px; color: var(--lkm-text2);
+    background: var(--lkm-bg2);
+    border: 1px solid var(--lkm-border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .kosten-cfg-chip span { color: var(--lkm-text); font-weight: 600; }
 
   /* ── Status pills ── */
   .status-strip { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 20px 16px; }
@@ -151,6 +169,8 @@ const STYLES = `
   .pill-green .pill-dot { background: var(--lkm-green); }
   .pill-red   { background: var(--lkm-red-bg);   color: var(--lkm-red);   border-color: rgba(248,113,113,0.2); }
   .pill-red   .pill-dot { background: var(--lkm-red); }
+  .pill-amber { background: var(--lkm-amber-bg); color: var(--lkm-amber); border-color: rgba(251,191,36,0.2); }
+  .pill-amber .pill-dot { background: var(--lkm-amber); }
 
   /* ── Footer ── */
   .footer {
@@ -193,6 +213,10 @@ const fmtN  = (n, dec = 0) =>
   typeof n === "number"
     ? n.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec })
     : "–";
+const fmtEur = (n) =>
+  typeof n === "number"
+    ? (n >= 0 ? "+" : "") + n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"
+    : "–";
 const sign  = (n) => (n > 0 ? "+" : "");
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
@@ -211,11 +235,6 @@ function getAttr(hass, eid, attr) {
   return hass.states[eid].attributes?.[attr] ?? null;
 }
 
-/**
- * Auto-discover all leasing_km integration instances.
- * Scans hass.states for sensors ending with _km_absolviert
- * and returns an array of { prefix, label } objects.
- */
 function discoverInstances(hass) {
   const SUFFIX = "_km_absolviert";
   return Object.keys(hass.states)
@@ -265,7 +284,6 @@ class LeasingKmCard extends HTMLElement {
   }
 
   static getStubConfig(hass) {
-    // Pre-fill with first discovered instance if possible
     if (hass) {
       const instances = discoverInstances(hass);
       if (instances.length > 0) return { entity_prefix: instances[0].prefix };
@@ -289,7 +307,6 @@ class LeasingKmCard extends HTMLElement {
   _renderContent(root, style) {
     const hass = this._hass;
 
-    // ── No prefix configured yet ────────────────────────────────────────────
     if (!this._config.entity_prefix) {
       const instances = discoverInstances(hass);
       root.innerHTML = "";
@@ -302,7 +319,6 @@ class LeasingKmCard extends HTMLElement {
           Bitte zuerst die <b>Leasing KM-Rechner</b> Integration einrichten.
         </div></div></ha-card>`;
       } else {
-        // Auto-select first instance and re-render
         this._config = { ...this._config, entity_prefix: instances[0].prefix };
         this._render();
         return;
@@ -311,7 +327,7 @@ class LeasingKmCard extends HTMLElement {
       return;
     }
 
-    // ── Read all entity values ───────────────────────────────────────────────
+    // ── Read entity values ───────────────────────────────────────────────────
     const istDay    = getState(hass, this._s("tagesleistung_ist"));
     const sollDay   = getState(hass, this._s("tagesleistung_soll"));
     const sollHeute = getState(hass, this._s("soll_km_heute"));
@@ -320,22 +336,35 @@ class LeasingKmCard extends HTMLElement {
     const diffMon   = getState(hass, this._s("differenz_monatsende"));
     const verblJahr = getState(hass, this._s("verbleibend_bis_jahresende"));
     const verblEnd  = getState(hass, this._s("verbleibend_bis_laufzeitende"));
-    const nochErl   = getState(hass, this._s("noch_erlaubt_gesamt"));
-    const jahresSoll= getState(hass, this._s("km_limit_pro_jahr"));
+    const nochErl   = getState(hass, this._s("noch_erlaubt"));
+    const jahresSoll= getState(hass, this._s("jahres_soll"));
     const progJahr  = getState(hass, this._s("prognose_jahresende"));
     const progEnd   = getState(hass, this._s("prognose_laufzeitende"));
     const kmPct     = getState(hass, this._s("km_absolviert"));
     const laufPct   = getState(hass, this._s("laufzeit_absolviert"));
 
+    // ── Neu: Kosten ──────────────────────────────────────────────────────────
+    const abwEnd      = getState(hass, this._s("abweichung_laufzeitende"));
+    const kostenProg  = getState(hass, this._s("kosten_prognose"));
+    const kostenAktiv = getAttr(hass, this._s("kosten_prognose"), "kosten_aktiv") === true;
+
+    // Config-Attribute (aus kosten_prognose Sensor-Attributen)
+    const kEid         = this._s("kosten_prognose");
+    const mehrCent     = getAttr(hass, kEid, "mehr_cent");
+    const minderCent   = getAttr(hass, kEid, "minder_cent");
+    const tolMehrKm    = getAttr(hass, kEid, "toleranz_mehr_km");
+    const tolMinderKm  = getAttr(hass, kEid, "toleranz_minder_km");
+    const minderGrenze = getAttr(hass, kEid, "minder_grenze_km");
+    const tolUeber     = getBool(hass, this._b("toleranz_ueberschritten"));
+
     const isOverSoll = getBool(hass, this._b("ueber_soll"));
-    const jahresOver = getBool(hass, this._b("jahres_km_prognose_ueberschritten"));
-    const endeOver   = getBool(hass, this._b("laufzeit_km_prognose_ueberschritten"));
+    const jahresOver = getBool(hass, this._b("jahres_km_ueberschritten"));
+    const endeOver   = getBool(hass, this._b("laufzeit_km_ueberschritten"));
 
     const vertragsende = getAttr(hass, this._s("differenz_heute"), "vertragsende") || null;
     const elapsedDays  = getAttr(hass, this._s("differenz_heute"), "elapsed_days");
     const totalDays    = getAttr(hass, this._s("differenz_heute"), "total_days");
 
-    // ── No data found → show helpful error with actual discovered entities ───
     if (kmPct === null && laufPct === null && sollHeute === null) {
       const instances = discoverInstances(hass);
       root.innerHTML = "";
@@ -346,8 +375,7 @@ class LeasingKmCard extends HTMLElement {
         Prefix <code style="font-size:11px">${this._config.entity_prefix}</code> nicht gefunden.<br><br>
         ${instances.length > 0
           ? `Gefundene Instanzen:<br>${instances.map(i =>
-              `<code style="font-size:11px;cursor:pointer;text-decoration:underline">${i.prefix}</code>`
-            ).join("<br>")}<br><br>Bitte Karte neu konfigurieren.`
+              `<code style="font-size:11px">${i.prefix}</code>`).join("<br>")}<br><br>Bitte Karte neu konfigurieren.`
           : "Keine Leasing KM-Instanz in Home Assistant gefunden."}
       </div></div></ha-card>`;
       root.appendChild(el);
@@ -372,14 +400,59 @@ class LeasingKmCard extends HTMLElement {
     const sm1x = 110 + 83 * Math.cos(sollRad), sm1y = 110 + 83 * Math.sin(sollRad);
     const sm2x = 110 + 97 * Math.cos(sollRad), sm2y = 110 + 97 * Math.sin(sollRad);
 
-    // ── Badge + title ────────────────────────────────────────────────────────
+    // ── Badge ────────────────────────────────────────────────────────────────
     const title      = this._config.title ||
       (hass.states[this._s("km_absolviert")]?.attributes?.friendly_name
         ?.replace(" KM absolviert", "") || "Leasing KM");
     const badgeClass = endeOver ? "badge-red" : over ? "badge-amber" : "badge-green";
     const badgeText  = endeOver ? "⚠ Limit gefährdet" : over ? "▲ Über Soll" : "✓ Im Rahmen";
     const vtEnd      = vertragsende ? new Date(vertragsende).toLocaleDateString("de-DE") : "–";
-    const solljahr   = jahresSoll ? jahresSoll * (laufPct ?? 0) / 100 * (12 / 12) : null;
+
+    // ── Kosten-Sektion ───────────────────────────────────────────────────────
+    const kostenColor = kostenProg === null ? ""
+      : kostenProg > 0 ? "red" : kostenProg < 0 ? "green" : "";
+    const kostenLabel = kostenProg === null ? "–"
+      : kostenProg > 0 ? "Nachzahlung erwartet"
+      : kostenProg < 0 ? "Erstattung erwartet"
+      : "Innerhalb Toleranz";
+
+    const abwColor = abwEnd === null ? ""
+      : abwEnd > 0 ? "red" : abwEnd < 0 ? "blue" : "";
+    const abwLabel = abwEnd === null ? "–"
+      : abwEnd > 0 ? "Mehrkilometer" : abwEnd < 0 ? "Minderkilometer" : "Exakt Soll";
+
+    // Config-Chips (nur wenn Werte vorhanden)
+    const cfgChips = [
+      mehrCent   != null ? `Mehr: <span>${fmtN(mehrCent, 1)} ct/km</span>` : null,
+      minderCent != null ? `Minder: <span>${fmtN(minderCent, 1)} ct/km</span>` : null,
+      tolMehrKm  != null && tolMehrKm > 0 ? `Tol.+: <span>${fmtN(tolMehrKm)} km</span>` : null,
+      tolMinderKm != null && tolMinderKm > 0 ? `Tol.−: <span>${fmtN(tolMinderKm)} km</span>` : null,
+      minderGrenze != null && minderGrenze > 0 ? `Grenze: <span>${fmtN(minderGrenze)} km</span>` : null,
+    ].filter(Boolean).map(c => `<span class="kosten-cfg-chip">${c}</span>`).join("");
+
+    const kostenSection = kostenAktiv ? `
+      <hr class="sep">
+      <div class="section-label">Kostenberechnung</div>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="metric-label">Prognose Abweichung</div>
+          <div class="metric-value ${abwColor}">${abwEnd !== null ? sign(abwEnd) + fmtN(abwEnd) : "–"} km</div>
+          <div class="metric-sub">${abwLabel}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Prognose Kosten / Erstattung</div>
+          <div class="metric-value ${kostenColor}">${kostenProg !== null ? fmtEur(kostenProg) : "–"}</div>
+          <div class="metric-sub">${kostenLabel}</div>
+        </div>
+      </div>
+      ${cfgChips ? `<div class="kosten-cfg">${cfgChips}</div>` : ""}
+    ` : "";
+
+    const tolPill = kostenAktiv ? `
+      <span class="status-pill ${tolUeber ? "pill-amber" : "pill-green"}">
+        <span class="pill-dot"></span>Toleranz ${tolUeber ? "überschritten" : "eingehalten"}
+      </span>
+    ` : "";
 
     const html = `
       <ha-card>
@@ -491,6 +564,8 @@ class LeasingKmCard extends HTMLElement {
             </div>
           </div>
 
+          ${kostenSection}
+
           <div class="status-strip">
             <span class="status-pill ${over ? "pill-red" : "pill-green"}">
               <span class="pill-dot"></span>${over ? "Über Tages-Soll" : "Unter Tages-Soll"}
@@ -501,6 +576,7 @@ class LeasingKmCard extends HTMLElement {
             <span class="status-pill ${endeOver ? "pill-red" : "pill-green"}">
               <span class="pill-dot"></span>Limit ${endeOver ? "wird überschritten" : "eingehalten"}
             </span>
+            ${tolPill}
           </div>
 
           <div class="footer">
@@ -537,7 +613,7 @@ class LeasingKmCard extends HTMLElement {
     this._renderContent(root, style);
   }
 
-  getCardSize() { return 10; }
+  getCardSize() { return 12; }
 }
 
 // ─── Editor ───────────────────────────────────────────────────────────────────
@@ -567,7 +643,6 @@ class LeasingKmCardEditor extends HTMLElement {
     root.innerHTML = "";
     root.appendChild(style);
 
-    // Discover instances for dropdown
     const instances = hass ? discoverInstances(hass) : [];
     const current   = this._config.entity_prefix || "";
 
