@@ -7,9 +7,10 @@
 **Eine Lovelace-Karte, die die Leasing-Kilometer auf einen Blick zeigt: Gauge, Soll-Ist, Prognose.**
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
-![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-41BDF5.svg?style=flat-square)](https://www.home-assistant.io)
 [![Visueller Editor](https://img.shields.io/badge/UI--Editor-enthalten-3DDC97.svg?style=flat-square)](#konfiguration)
+[![Sprachen](https://img.shields.io/badge/UI-Deutsch%20%C2%B7%20English-41BDF5.svg?style=flat-square)](#sprache)
 
 [English](README.md) · **Deutsch**
 
@@ -43,7 +44,7 @@ wechselt selbstständig zwischen Hell und Dunkel.
 ## Vorschau
 
 <div align="center">
-<img src="assets/card-preview.svg" alt="Leasing KM Card in Home Assistant: Gauge bei 65,2 Prozent, Fortschrittsbalken, Soll-Ist-Kacheln, Prognose-Kacheln und grüne Status-Pills" width="52%">
+<img src="assets/card-preview.de.svg" alt="Leasing KM Card in Home Assistant: Gauge bei 65,2 Prozent, Fortschrittsbalken, Soll-Ist-Kacheln, Prognose-Kacheln und grüne Status-Pills" width="52%">
 </div>
 
 > Das ist eine Illustration des Kartenlayouts, kein Foto einer laufenden Instanz.
@@ -159,6 +160,22 @@ title: BMW 3er
 
 ---
 
+## Sprache
+
+Die Karte folgt der **Sprache der Home-Assistant-Oberfläche**. Jede Beschriftung, die sie zeichnet —
+Abschnittsüberschriften, Kennzahlen, Status-Pills, der Editor — gibt es auf **Deutsch und Englisch**;
+jede andere Oberflächensprache fällt auf Englisch zurück.
+
+Zahlen, Datums- und Zeitangaben richten sich nach derselben Locale: Eine deutsche Instanz zeigt
+`65,2 %` und `1.11.2027`, eine englische `65.2 %` und `11/1/2027`.
+
+Die Entitätsnamen kommen aus der
+[Integration](https://github.com/sphings79/km_leasing_check_ha) und sind dort in denselben beiden
+Sprachen übersetzt. Die Entitäts-**IDs** bleiben in jeder Sprache gleich — Dashboards und
+Automationen funktionieren also weiter, wenn man die Oberflächensprache wechselt.
+
+---
+
 ## Theming
 
 Die Karte übernimmt ihre Farben aus den CSS-Variablen von Home Assistant —
@@ -198,6 +215,12 @@ davon heißt: bisher weniger gefahren, als der Vertrag zu diesem Zeitpunkt erlau
 
 ## Changelog
 
+### 1.2.0
+- **Deutsche und englische Oberfläche**, passend zur Home-Assistant-Sprache
+- Zahlen, Datum und Uhrzeit folgen jetzt der Locale statt immer deutsch zu sein
+- Instanz- und Kartentitel werden nach Möglichkeit aus dem Gerätenamen gelesen
+- Überlappung der Gauge-Beschriftung mit dem Prozentwert behoben
+
 ### 1.0.0
 - Erstveröffentlichung
 - Halbkreis-Gauge mit Ist-Nadel und Soll-Markierung
@@ -211,4 +234,4 @@ davon heißt: bisher weniger gefahren, als der Vertrag zu diesem Zeitpunkt erlau
 
 ## Lizenz
 
-MIT.
+MIT — siehe [LICENSE](LICENSE).

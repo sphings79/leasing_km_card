@@ -5,7 +5,7 @@
  * https://github.com/sphings79/leasing_km_card
  */
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -75,10 +75,10 @@ const STYLES = `
     display: flex; flex-direction: column; align-items: center;
     padding: 20px 20px 0;
   }
-  .gauge-svg { width: 220px; height: 130px; overflow: visible; }
+  .gauge-svg { width: 220px; height: 142px; overflow: visible; }
   .gauge-track { fill: none; stroke: var(--lkm-bg3); stroke-width: 16; stroke-linecap: round; }
   .gauge-val   { font-size: 28px; font-weight: 700; fill: var(--lkm-text); text-anchor: middle; }
-  .gauge-unit  { font-size: 9px; fill: var(--lkm-text2); text-anchor: middle; }
+  .gauge-unit  { font-size: 10px; fill: var(--lkm-text2); text-anchor: middle; }
   .gauge-label { font-size: 10px; fill: var(--lkm-text3); }
 
   /* ── Progress bar ── */
@@ -187,11 +187,132 @@ const STYLES = `
   }
 `;
 
+
+// ─── Localisation ─────────────────────────────────────────────────────────────
+// The card follows the Home Assistant UI language. German and English are built
+// in; anything else falls back to English.
+
+const I18N = {
+  de: {
+    loading:            "Lade …",
+    noInstanceTitle:    "Keine Leasing KM-Instanz gefunden.",
+    noInstanceBody:     "Bitte zuerst die <b>Leasing KM-Rechner</b> Integration einrichten.",
+    defaultTitle:       "Leasing KM",
+    contractEnd:        "Vertragsende {d}",
+    badgeAtRisk:        "⚠ Limit gefährdet",
+    badgeOver:          "▲ Über Soll",
+    badgeOk:            "✓ Im Rahmen",
+    gaugeSub:           "KM absolviert · Soll: {p} %",
+    progressLabel:      "KM-Fortschritt",
+    progressValue:      "{p} % von 100 %",
+    barSub:             "Soll: {s} % (Laufzeit: {l} %)",
+    days:               "{a} / {b} Tage",
+    secTargetActual:    "Soll-Ist-Vergleich",
+    secForecast:        "Prognose",
+    secRemaining:       "Verbleibend (Soll-Basis)",
+    mDiffToday:         "Differenz heute",
+    mDiffMonth:         "Differenz Monatsende",
+    mActualPerDay:      "Ist km/Tag",
+    mStillAllowed:      "Noch erlaubt",
+    mYearEnd:           "Jahresende",
+    mContractEnd:       "Laufzeitende",
+    mTargetPerYear:     "Soll / Jahr",
+    mUntilYearEnd:      "Bis Jahresende",
+    mUntilContractEnd:  "Bis Laufzeitende",
+    subTarget:          "Soll: {v} km",
+    subTargetDay:       "Soll: {v} km/Tag",
+    subUntilEnd:        "bis Vertragsende",
+    subAnnualBudget:    "Jahresbudget",
+    overLimit:          "▲ über Limit",
+    withinLimit:        "✓ im Rahmen",
+    pillOverDaily:      "Über Tages-Soll",
+    pillUnderDaily:     "Unter Tages-Soll",
+    pillYearRisk:       "Jahres-KM gefährdet",
+    pillYearSafe:       "Jahres-KM sicher",
+    pillLimitExceeded:  "Limit wird überschritten",
+    pillLimitOk:        "Limit eingehalten",
+    footerTime:         "{t} Uhr",
+    nameKmDone:         "KM absolviert",
+    edInstance:         "Leasing-Instanz",
+    edInstanceHint:     "Automatisch erkannte Leasing KM-Rechner Instanzen",
+    edNoInstance:       "– keine Instanz gefunden –",
+    edTitle:            "Titel (optional)",
+    edTitlePlaceholder: "Wird automatisch befüllt",
+  },
+  en: {
+    loading:            "Loading …",
+    noInstanceTitle:    "No Leasing KM instance found.",
+    noInstanceBody:     "Set up the <b>Leasing KM Calculator</b> integration first.",
+    defaultTitle:       "Leasing KM",
+    contractEnd:        "Contract ends {d}",
+    badgeAtRisk:        "⚠ Limit at risk",
+    badgeOver:          "▲ Above target",
+    badgeOk:            "✓ On track",
+    gaugeSub:           "Mileage used · target: {p} %",
+    progressLabel:      "Mileage progress",
+    progressValue:      "{p} % of 100 %",
+    barSub:             "Target: {s} % (elapsed: {l} %)",
+    days:               "{a} / {b} days",
+    secTargetActual:    "Target vs. actual",
+    secForecast:        "Forecast",
+    secRemaining:       "Remaining (target basis)",
+    mDiffToday:         "Deviation today",
+    mDiffMonth:         "Deviation at month end",
+    mActualPerDay:      "Actual km/day",
+    mStillAllowed:      "Still allowed",
+    mYearEnd:           "Year end",
+    mContractEnd:       "Contract end",
+    mTargetPerYear:     "Target / year",
+    mUntilYearEnd:      "Until year end",
+    mUntilContractEnd:  "Until contract end",
+    subTarget:          "Target: {v} km",
+    subTargetDay:       "Target: {v} km/day",
+    subUntilEnd:        "until contract end",
+    subAnnualBudget:    "Annual budget",
+    overLimit:          "▲ over limit",
+    withinLimit:        "✓ within limit",
+    pillOverDaily:      "Above daily target",
+    pillUnderDaily:     "Below daily target",
+    pillYearRisk:       "Annual mileage at risk",
+    pillYearSafe:       "Annual mileage safe",
+    pillLimitExceeded:  "Limit will be exceeded",
+    pillLimitOk:        "Limit kept",
+    footerTime:         "{t}",
+    nameKmDone:         "Mileage used",
+    edInstance:         "Leasing instance",
+    edInstanceHint:     "Automatically detected Leasing KM Calculator instances",
+    edNoInstance:       "– no instance found –",
+    edTitle:            "Title (optional)",
+    edTitlePlaceholder: "Filled in automatically",
+  },
+};
+
+/** Resolve the Home Assistant UI language to a supported one. */
+function pickLang(hass) {
+  const raw = hass?.locale?.language || hass?.language || "en";
+  return String(raw).toLowerCase().startsWith("de") ? "de" : "en";
+}
+
+/** Locale used for number and date formatting. */
+function pickLocale(hass) {
+  return hass?.locale?.language || hass?.language || (pickLang(hass) === "de" ? "de-DE" : "en-GB");
+}
+
+/** Translate `key`, substituting {placeholders} from `vars`. */
+function t(lang, key, vars) {
+  let out = (I18N[lang] || I18N.en)[key] ?? I18N.en[key] ?? key;
+  if (vars) for (const [k, v] of Object.entries(vars)) out = out.replaceAll(`{${k}}`, v);
+  return out;
+}
+
+// Number formatting follows the same locale. Set once per render.
+let CURRENT_LOCALE = "en-GB";
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const fmtN  = (n, dec = 0) =>
   typeof n === "number"
-    ? n.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec })
+    ? n.toLocaleString(CURRENT_LOCALE, { minimumFractionDigits: dec, maximumFractionDigits: dec })
     : "–";
 const sign  = (n) => (n > 0 ? "+" : "");
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
@@ -227,9 +348,14 @@ function discoverInstances(hass) {
     )
     .map((eid) => {
       const prefix = eid.slice("sensor.".length, -SUFFIX.length);
-      const label  =
+      // Prefer the device name; fall back to trimming the entity name off the
+      // friendly name, in whichever language it was rendered.
+      const devId = hass.entities?.[eid]?.device_id;
+      const devName = devId ? hass.devices?.[devId]?.name_by_user || hass.devices?.[devId]?.name : null;
+      const label  = devName ||
         hass.states[eid].attributes?.friendly_name
-          ?.replace(" KM absolviert", "")
+          ?.replace(` ${I18N.de.nameKmDone}`, "")
+          ?.replace(` ${I18N.en.nameKmDone}`, "")
           ?.replace(" km_absolviert", "")
           ?.trim() || prefix;
       return { prefix, label };
@@ -288,6 +414,8 @@ class LeasingKmCard extends HTMLElement {
 
   _renderContent(root, style) {
     const hass = this._hass;
+    const lang = pickLang(hass);
+    CURRENT_LOCALE = pickLocale(hass);
 
     // ── No prefix configured yet ────────────────────────────────────────────
     if (!this._config.entity_prefix) {
@@ -298,8 +426,8 @@ class LeasingKmCard extends HTMLElement {
       if (instances.length === 0) {
         el.innerHTML = `<ha-card><div class="card"><div class="state-msg">
           <span class="icon">🔌</span>
-          Keine Leasing KM-Instanz gefunden.<br>
-          Bitte zuerst die <b>Leasing KM-Rechner</b> Integration einrichten.
+          ${t(lang, "noInstanceTitle")}<br>
+          ${t(lang, "noInstanceBody")}
         </div></div></ha-card>`;
       } else {
         // Auto-select first instance and re-render
@@ -373,12 +501,18 @@ class LeasingKmCard extends HTMLElement {
     const sm2x = 110 + 97 * Math.cos(sollRad), sm2y = 110 + 97 * Math.sin(sollRad);
 
     // ── Badge + title ────────────────────────────────────────────────────────
-    const title      = this._config.title ||
-      (hass.states[this._s("km_absolviert")]?.attributes?.friendly_name
-        ?.replace(" KM absolviert", "") || "Leasing KM");
+    const kmDoneId   = this._s("km_absolviert");
+    const devId      = hass.entities?.[kmDoneId]?.device_id;
+    const devName    = devId
+      ? hass.devices?.[devId]?.name_by_user || hass.devices?.[devId]?.name
+      : null;
+    const title      = this._config.title || devName ||
+      (hass.states[kmDoneId]?.attributes?.friendly_name
+        ?.replace(` ${I18N.de.nameKmDone}`, "")
+        ?.replace(` ${I18N.en.nameKmDone}`, "") || t(lang, "defaultTitle"));
     const badgeClass = endeOver ? "badge-red" : over ? "badge-amber" : "badge-green";
-    const badgeText  = endeOver ? "⚠ Limit gefährdet" : over ? "▲ Über Soll" : "✓ Im Rahmen";
-    const vtEnd      = vertragsende ? new Date(vertragsende).toLocaleDateString("de-DE") : "–";
+    const badgeText  = endeOver ? t(lang, "badgeAtRisk") : over ? t(lang, "badgeOver") : t(lang, "badgeOk");
+    const vtEnd      = vertragsende ? new Date(vertragsende).toLocaleDateString(CURRENT_LOCALE) : "–";
     const solljahr   = jahresSoll ? jahresSoll * (laufPct ?? 0) / 100 * (12 / 12) : null;
 
     const html = `
@@ -394,98 +528,98 @@ class LeasingKmCard extends HTMLElement {
             </div>
             <div>
               <div class="header-title">${title}</div>
-              <div class="header-sub">Vertragsende ${vtEnd}</div>
+              <div class="header-sub">${t(lang, "contractEnd", { d: vtEnd })}</div>
             </div>
             <span class="header-badge ${badgeClass}">${badgeText}</span>
           </div>
 
           <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 40 220 100">
+            <svg class="gauge-svg" viewBox="0 40 220 105">
               <path class="gauge-track" d="${arcTrackPath}"/>
               <path d="${arcFillPath}" fill="none" stroke="${gaugeColor}" stroke-width="16" stroke-linecap="round"/>
               <line x1="${sm1x}" y1="${sm1y}" x2="${sm2x}" y2="${sm2y}"
                 stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
-              <text x="22"  y="122" class="gauge-label" text-anchor="middle">0%</text>
-              <text x="198" y="122" class="gauge-label" text-anchor="end">100%</text>
+              <text x="22"  y="127" class="gauge-label" text-anchor="middle">0%</text>
+              <text x="198" y="127" class="gauge-label" text-anchor="end">100%</text>
               <line x1="110" y1="110" x2="${nx}" y2="${ny}"
                 stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round"/>
               <circle cx="110" cy="110" r="8" fill="var(--lkm-accent)"/>
               <circle cx="110" cy="110" r="3.5" fill="white"/>
-              <text x="110" y="100" class="gauge-val">${fmtN(istP, 1)} %</text>
-              <text x="110" y="112" class="gauge-unit">KM absolviert · Soll: ${fmtN(sollP, 1)} %</text>
+              <text x="110" y="98" class="gauge-val">${fmtN(istP, 1)} %</text>
+              <text x="110" y="137" class="gauge-unit">${t(lang, "gaugeSub", { p: fmtN(sollP, 1) })}</text>
             </svg>
           </div>
 
           <div class="progress-section">
             <div class="progress-row">
-              <span class="progress-label">KM-Fortschritt</span>
-              <span class="progress-value">${fmtN(istP, 1)} % von 100 %</span>
+              <span class="progress-label">${t(lang, "progressLabel")}</span>
+              <span class="progress-value">${t(lang, "progressValue", { p: fmtN(istP, 1) })}</span>
             </div>
             <div class="bar-wrap">
               <div class="bar-soll ${over ? "bar-bad" : "bar-ok"}" style="width:${sollP}%"></div>
               <div class="bar-ist  ${over ? "bar-bad" : "bar-ok"}" style="width:${istP}%"></div>
             </div>
             <div class="bar-sub">
-              <span>Soll: ${fmtN(sollP, 1)} % (Laufzeit: ${fmtN(laufPct, 1)} %)</span>
-              <span>${elapsedDays !== null ? `${elapsedDays} / ${totalDays} Tage` : ""}</span>
+              <span>${t(lang, "barSub", { s: fmtN(sollP, 1), l: fmtN(laufPct, 1) })}</span>
+              <span>${elapsedDays !== null ? t(lang, "days", { a: elapsedDays, b: totalDays }) : ""}</span>
             </div>
           </div>
 
           <hr class="sep">
-          <div class="section-label">Soll-Ist-Vergleich</div>
+          <div class="section-label">${t(lang, "secTargetActual")}</div>
           <div class="metric-grid">
             <div class="metric">
-              <div class="metric-label">Differenz heute</div>
+              <div class="metric-label">${t(lang, "mDiffToday")}</div>
               <div class="metric-value ${over ? "red" : "green"}">${diffHeute !== null ? sign(diffHeute) + fmtN(diffHeute) : "–"} km</div>
-              <div class="metric-sub">Soll: ${fmtN(sollHeute)} km</div>
+              <div class="metric-sub">${t(lang, "subTarget", { v: fmtN(sollHeute) })}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Differenz Monatsende</div>
+              <div class="metric-label">${t(lang, "mDiffMonth")}</div>
               <div class="metric-value ${(diffMon ?? 0) > 0 ? "red" : "green"}">${diffMon !== null ? sign(diffMon) + fmtN(diffMon) : "–"} km</div>
-              <div class="metric-sub">Soll: ${fmtN(sollMon)} km</div>
+              <div class="metric-sub">${t(lang, "subTarget", { v: fmtN(sollMon) })}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Ist km/Tag</div>
+              <div class="metric-label">${t(lang, "mActualPerDay")}</div>
               <div class="metric-value">${fmtN(istDay, 1)} km</div>
-              <div class="metric-sub">Soll: ${fmtN(sollDay, 1)} km/Tag</div>
+              <div class="metric-sub">${t(lang, "subTargetDay", { v: fmtN(sollDay, 1) })}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Noch erlaubt</div>
+              <div class="metric-label">${t(lang, "mStillAllowed")}</div>
               <div class="metric-value ${(nochErl ?? 9999) < 5000 ? "amber" : ""}">${fmtN(nochErl)} km</div>
-              <div class="metric-sub">bis Vertragsende</div>
+              <div class="metric-sub">${t(lang, "subUntilEnd")}</div>
             </div>
           </div>
 
           <hr class="sep">
-          <div class="section-label">Prognose</div>
+          <div class="section-label">${t(lang, "secForecast")}</div>
           <div class="metric-grid cols3">
             <div class="metric">
-              <div class="metric-label">Jahresende</div>
+              <div class="metric-label">${t(lang, "mYearEnd")}</div>
               <div class="metric-value ${jahresOver ? "red" : "green"}">${fmtN(progJahr)} km</div>
-              <div class="metric-sub">${jahresOver ? "▲ über Limit" : "✓ im Rahmen"}</div>
+              <div class="metric-sub">${jahresOver ? t(lang, "overLimit") : t(lang, "withinLimit")}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Laufzeitende</div>
+              <div class="metric-label">${t(lang, "mContractEnd")}</div>
               <div class="metric-value ${endeOver ? "red" : "green"}">${fmtN(progEnd)} km</div>
-              <div class="metric-sub">${endeOver ? "▲ über Limit" : "✓ im Rahmen"}</div>
+              <div class="metric-sub">${endeOver ? t(lang, "overLimit") : t(lang, "withinLimit")}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Soll / Jahr</div>
+              <div class="metric-label">${t(lang, "mTargetPerYear")}</div>
               <div class="metric-value">${fmtN(jahresSoll)} km</div>
-              <div class="metric-sub">Jahresbudget</div>
+              <div class="metric-sub">${t(lang, "subAnnualBudget")}</div>
             </div>
           </div>
 
           <hr class="sep">
-          <div class="section-label">Verbleibend (Soll-Basis)</div>
+          <div class="section-label">${t(lang, "secRemaining")}</div>
           <div class="metric-grid">
             <div class="metric">
-              <div class="metric-label">Bis Jahresende</div>
+              <div class="metric-label">${t(lang, "mUntilYearEnd")}</div>
               <div class="metric-value">${fmtN(verblJahr)} km</div>
               <div class="metric-sub">31.12.${new Date().getFullYear()}</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Bis Laufzeitende</div>
+              <div class="metric-label">${t(lang, "mUntilContractEnd")}</div>
               <div class="metric-value">${fmtN(verblEnd)} km</div>
               <div class="metric-sub">${vtEnd}</div>
             </div>
@@ -493,18 +627,18 @@ class LeasingKmCard extends HTMLElement {
 
           <div class="status-strip">
             <span class="status-pill ${over ? "pill-red" : "pill-green"}">
-              <span class="pill-dot"></span>${over ? "Über Tages-Soll" : "Unter Tages-Soll"}
+              <span class="pill-dot"></span>${over ? t(lang, "pillOverDaily") : t(lang, "pillUnderDaily")}
             </span>
             <span class="status-pill ${jahresOver ? "pill-red" : "pill-green"}">
-              <span class="pill-dot"></span>Jahres-KM ${jahresOver ? "gefährdet" : "sicher"}
+              <span class="pill-dot"></span>${jahresOver ? t(lang, "pillYearRisk") : t(lang, "pillYearSafe")}
             </span>
             <span class="status-pill ${endeOver ? "pill-red" : "pill-green"}">
-              <span class="pill-dot"></span>Limit ${endeOver ? "wird überschritten" : "eingehalten"}
+              <span class="pill-dot"></span>${endeOver ? t(lang, "pillLimitExceeded") : t(lang, "pillLimitOk")}
             </span>
           </div>
 
           <div class="footer">
-            Leasing KM Card v${VERSION} · ${new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
+            Leasing KM Card v${VERSION} · ${t(lang, "footerTime", { t: new Date().toLocaleTimeString(CURRENT_LOCALE, { hour: "2-digit", minute: "2-digit" }) })}
           </div>
 
         </div>
@@ -529,7 +663,7 @@ class LeasingKmCard extends HTMLElement {
       root.innerHTML = "";
       root.appendChild(style);
       const el = document.createElement("div");
-      el.innerHTML = `<ha-card><div class="card"><div class="state-msg"><span class="icon">🚗</span>Lade …</div></div></ha-card>`;
+      el.innerHTML = `<ha-card><div class="card"><div class="state-msg"><span class="icon">🚗</span>${t(pickLang(this._hass), "loading")}</div></div></ha-card>`;
       root.appendChild(el);
       return;
     }
@@ -568,6 +702,8 @@ class LeasingKmCardEditor extends HTMLElement {
     root.appendChild(style);
 
     // Discover instances for dropdown
+    const lang      = pickLang(hass);
+    CURRENT_LOCALE  = pickLocale(hass);
     const instances = hass ? discoverInstances(hass) : [];
     const current   = this._config.entity_prefix || "";
 
@@ -575,17 +711,17 @@ class LeasingKmCardEditor extends HTMLElement {
       ? instances.map(i =>
           `<option value="${i.prefix}" ${i.prefix === current ? "selected" : ""}>${i.label} (${i.prefix})</option>`
         ).join("")
-      : `<option value="${current}">${current || "– keine Instanz gefunden –"}</option>`;
+      : `<option value="${current}">${current || t(lang, "edNoInstance")}</option>`;
 
     const el = document.createElement("div");
     el.innerHTML = `
       <div class="editor">
-        <label>Leasing-Instanz</label>
+        <label>${t(lang, "edInstance")}</label>
         <select id="entity_prefix">${optionsHtml}</select>
-        <div class="hint">Automatisch erkannte Leasing KM-Rechner Instanzen</div>
+        <div class="hint">${t(lang, "edInstanceHint")}</div>
 
-        <label>Titel (optional)</label>
-        <input id="title" type="text" placeholder="Wird automatisch befüllt" value="${this._config.title || ""}">
+        <label>${t(lang, "edTitle")}</label>
+        <input id="title" type="text" placeholder="${t(lang, "edTitlePlaceholder")}" value="${this._config.title || ""}">
       </div>
     `;
     root.appendChild(el);
@@ -613,7 +749,7 @@ window.customCards = window.customCards || [];
 window.customCards.push({
   type:        "leasing-km-card",
   name:        "Leasing KM Card",
-  description: "Modernes Dashboard für die Leasing KM-Rechner Integration – mit automatischer Instanz-Erkennung",
+  description: "Leasing mileage at a glance: gauge, target vs. actual and forecast. Detects the integration's instances automatically.",
   preview:     true,
   documentationURL: "https://github.com/sphings79/leasing_km_card",
 });

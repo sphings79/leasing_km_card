@@ -7,9 +7,10 @@
 **A Lovelace card that turns your leasing mileage into one glance: gauge, target vs. actual, forecast.**
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
-![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-41BDF5.svg?style=flat-square)](https://www.home-assistant.io)
 [![Visual editor](https://img.shields.io/badge/UI%20editor-included-3DDC97.svg?style=flat-square)](#configuration)
+[![Languages](https://img.shields.io/badge/UI-English%20%C2%B7%20Deutsch-41BDF5.svg?style=flat-square)](#language)
 
 **English** · [Deutsch](README.de.md)
 
@@ -45,11 +46,7 @@ and dark on its own.
 </div>
 
 > This is an illustration of the card's layout, not a photograph of a running instance.
-
-> **A note on language.** The card's own labels (*Differenz heute*, *Prognose Laufzeitende*, …) are
-> **German** and do not currently follow the Home Assistant UI language. The entities behind them
-> are named in German by the integration as well; the tables in this README give the English
-> meaning of each value.
+> The German version is in [README.de.md](README.de.md).
 
 ---
 
@@ -162,6 +159,21 @@ title: BMW 3 Series
 
 ---
 
+## Language
+
+The card follows the **Home Assistant UI language**. Every label it draws — section headings,
+metric names, status pills, the editor — is available in **English and German**; any other UI
+language falls back to English.
+
+Numbers, dates and times follow the same locale, so a German instance shows `65,2 %` and
+`1.11.2027` while an English one shows `65.2 %` and `11/1/2027`.
+
+The entity names come from the [integration](https://github.com/sphings79/km_leasing_check_ha) and
+are translated there in the same two languages. Entity **IDs** stay the same in every language, so
+dashboards and automations keep working when you switch the UI language.
+
+---
+
 ## Theming
 
 The card takes its colours from Home Assistant's CSS variables — `--card-background-color`,
@@ -200,6 +212,12 @@ the left means you have driven fewer kilometres than the contract allowed by now
 
 ## Changelog
 
+### 1.2.0
+- **English and German UI**, following the Home Assistant language
+- Numbers, dates and times now follow the UI locale instead of always being German
+- Instance and card titles are read from the device name where available
+- Fixed the gauge caption overlapping the percentage value
+
 ### 1.0.0
 - First release
 - Semicircular gauge with actual needle and target tick
@@ -213,4 +231,4 @@ the left means you have driven fewer kilometres than the contract allowed by now
 
 ## License
 
-MIT.
+MIT — see [LICENSE](LICENSE).
