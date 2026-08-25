@@ -1,139 +1,216 @@
-# 🚗 Leasing KM Card – Lovelace Custom Card
+<div align="center">
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![HA Version](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-blue)](https://www.home-assistant.io/)
+<img src="assets/banner.svg" alt="Leasing KM Card — Home Assistant Lovelace card showing leasing mileage as a gauge, progress bar and forecast" width="100%">
 
-Modernes Lovelace-Dashboard für die [Leasing KM-Rechner Integration](https://github.com/sphings79/km_leasing_check_ha).  
-Zeigt Soll-Ist-Vergleich, Prognosen, Restkilometer und Statusanzeigen in einer kompakten, responsiven Karte.
+# Leasing KM Card for Home Assistant
 
----
+**A Lovelace card that turns your leasing mileage into one glance: gauge, target vs. actual, forecast.**
 
-## ✨ Features
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
+![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.4%2B-41BDF5.svg?style=flat-square)](https://www.home-assistant.io)
+[![Visual editor](https://img.shields.io/badge/UI%20editor-included-3DDC97.svg?style=flat-square)](#configuration)
 
-- **Halbkreis-Gauge** mit Nadel und Soll-Markierung
-- **Fortschrittsbalken** (Ist vs. Soll, farblich je nach Status)
-- **Status-Badges** (Über Soll / Im Rahmen / Limit gefährdet)
-- **Metriken-Grid** für alle Sensor-Werte
-- **Prognose-Kacheln** für Jahres- und Laufzeitende
-- **Status-Pills** für die drei Binärsensoren
-- Automatisches **Dark / Light Theme** (nutzt HA CSS-Variablen)
-- Visueller **Card-Editor** in der UI (kein YAML-Tippen nötig)
+**English** · [Deutsch](README.de.md)
+
+</div>
 
 ---
 
-## 📋 Voraussetzungen
+## What this card does
 
-| Anforderung | Details |
+The [Leasing KM Calculator integration](https://github.com/sphings79/km_leasing_check_ha) produces
+14 sensors and 3 binary sensors. Put them in a stock entities card and you get a list of numbers
+that all look equally important — which is exactly the problem, because only two of them matter
+day to day: *am I ahead or behind*, and *where will I end up*.
+
+This card answers both without reading anything:
+
+- A **semicircular gauge** shows the share of the mileage allowance used, with a **needle** for the
+  actual value and a **tick mark** for the target. Needle left of the tick means you are fine.
+- A **layered progress bar** puts actual against target on the same track and turns red the moment
+  you cross over.
+- **Metric tiles**, grouped into target-vs-actual, forecast and remaining kilometres.
+- **Status pills** for the three binary sensors, so a looming overrun is visible as colour.
+
+It reads Home Assistant's own CSS variables, so it follows your theme and switches between light
+and dark on its own.
+
+---
+
+## Preview
+
+<div align="center">
+<img src="assets/card-preview.svg" alt="Leasing KM Card in Home Assistant: gauge at 65.2 percent, progress bar, target-vs-actual tiles, forecast tiles and green status pills" width="52%">
+</div>
+
+> This is an illustration of the card's layout, not a photograph of a running instance.
+
+> **A note on language.** The card's own labels (*Differenz heute*, *Prognose Laufzeitende*, …) are
+> **German** and do not currently follow the Home Assistant UI language. The entities behind them
+> are named in German by the integration as well; the tables in this README give the English
+> meaning of each value.
+
+---
+
+## Requirements
+
+| Requirement | Details |
 |---|---|
-| Home Assistant | 2026.4 oder neuer |
-| Leasing KM-Rechner Integration | [→ GitHub](https://github.com/sphings79/km_leasing_check_ha) |
+| Home Assistant | 2026.4 or newer |
+| [Leasing KM Calculator integration](https://github.com/sphings79/km_leasing_check_ha) | Required — the card only renders its entities |
+
+Install the integration first. Without it the card shows a hint telling you so, rather than an
+error.
 
 ---
 
-## 🚀 Installation
+## Installation
 
-### Option A – HACS (empfohlen)
+### Option A — HACS (recommended)
 
-1. HACS öffnen → **Frontend** → Drei-Punkte-Menü → **Benutzerdefinierte Repositories**
-2. URL dieses Repos eintragen, Kategorie **Lovelace** wählen → **Hinzufügen**
-3. „Leasing KM Card" suchen und installieren
-4. Browser-Cache leeren (Strg + Shift + R)
+1. Open HACS → **Frontend** → three-dot menu → **Custom repositories**
+2. Add the URL of this repository, category **Lovelace** → **Add**
+3. Search for **“Leasing KM Card”** and install it
+4. Empty the browser cache (Ctrl + Shift + R)
 
-### Option B – Manuell
+### Option B — manual
 
-1. `leasing-km-card.js` in `config/www/` kopieren
-2. In HA: **Einstellungen → Dashboards → Ressourcen → + Ressource hinzufügen**
-3. URL: `/local/leasing-km-card.js` · Typ: **JavaScript-Modul**
-4. Browser-Cache leeren
+1. Copy `leasing-km-card.js` into `config/www/`
+2. In Home Assistant: **Settings → Dashboards → Resources → + Add resource**
+3. URL `/local/leasing-km-card.js`, type **JavaScript module**
+4. Empty the browser cache
 
 ---
 
-## ⚙️ Konfiguration
+## Configuration
 
-### Minimale Konfiguration (YAML)
+The card ships a **visual editor** — pick it from the card picker, choose the instance, done. The
+YAML below is what that editor writes.
+
+### Minimal
 
 ```yaml
 type: custom:leasing-km-card
 entity_prefix: leasing
 ```
 
-### Vollständige Konfiguration
+### Full
 
 ```yaml
 type: custom:leasing-km-card
 entity_prefix: leasing
-title: Mein Leasing-Auto
+title: My leased car
 ```
 
-### Parameter
+### Options
 
-| Parameter | Pflicht | Standard | Beschreibung |
+| Option | Required | Default | Description |
 |---|---|---|---|
-| `entity_prefix` | ✅ | – | Präfix der Entitäten (z. B. `leasing` → `sensor.leasing_km_absolviert`) |
-| `title` | ❌ | `Leasing KM` | Titel in der Karten-Kopfzeile |
+| `entity_prefix` | ✅ | – | Prefix of the integration's entities (e.g. `leasing` → `sensor.leasing_km_absolviert`) |
+| `title` | ❌ | `Leasing KM` | Heading shown in the card header |
 
----
+### Finding your entity prefix
 
-## 🔍 Entity Prefix ermitteln
+The prefix is the part of the entity ID after `sensor.` and before the value's own name — in other
+words, the slug of the device name you gave the integration.
 
-Der `entity_prefix` entspricht dem ersten Teil des Entitätsnamens nach `sensor.` bis zum ersten Unterstrich-Block.
+If your entities look like this:
 
-**Beispiel:** Wenn deine Entitäten so heißen:
 ```
 sensor.leasing_km_absolviert
 sensor.leasing_differenz_heute
 binary_sensor.leasing_ueber_soll
 ```
-→ dann ist der Prefix `leasing`.
 
-Bei mehreren Fahrzeugen (z. B. `sensor.vw_golf_km_absolviert`) entsprechend `vw_golf` eintragen.
+then the prefix is `leasing`. For a device named *VW Golf* the entities become
+`sensor.vw_golf_km_absolviert` and the prefix is `vw_golf`.
+
+The visual editor detects the configured instances automatically, so you rarely have to work this
+out by hand.
 
 ---
 
-## 📊 Angezeigte Werte
+## What the card shows
 
-| Bereich | Wert |
+| Area | Values |
 |---|---|
-| Gauge | KM absolviert % mit Soll-Markierung und Nadel |
-| Fortschrittsbalken | Ist- vs. Soll-Fortschritt (grün/rot) |
-| Soll-Ist | Differenz heute, Differenz Monatsende, km/Tag Ist & Soll, Noch erlaubt |
-| Prognose | Jahresende, Laufzeitende, Jahresbudget |
-| Restkilometer | Bis Jahresende, Bis Laufzeitende |
-| Status-Pills | Über Soll · Jahres-KM gefährdet · Limit überschritten |
+| Gauge | Share of the allowance used, with a needle for actual and a tick for target |
+| Progress bar | Actual against target on one track, green while within the contract, red beyond it |
+| Target vs. actual | Deviation today, deviation at month end, actual and target km/day, kilometres still allowed |
+| Forecast | Projection for the end of the year and the end of the contract, plus the annual budget |
+| Remaining | Target kilometres left until 31 December and until the contract ends |
+| Status pills | Above daily target · annual mileage at risk · contract limit exceeded |
 
 ---
 
-## 🔧 Mehrere Fahrzeuge
+## Several vehicles
 
-Für jedes Fahrzeug einfach eine eigene Karte mit dem jeweiligen `entity_prefix` anlegen:
+Add one card per vehicle, each with its own `entity_prefix`:
 
 ```yaml
 type: custom:leasing-km-card
 entity_prefix: vw_golf
 title: VW Golf
+```
 
----
-
+```yaml
 type: custom:leasing-km-card
 entity_prefix: bmw_3er
-title: BMW 3er
+title: BMW 3 Series
 ```
 
 ---
 
-## 📝 Changelog
+## Theming
 
-### 1.0.0
-- Erstveröffentlichung
-- Halbkreis-Gauge mit Ist-Nadel und Soll-Markierung
-- Fortschrittsbalken mit Ist/Soll-Layering
-- Vollständiger Metriken-Überblick in 4 Abschnitten
-- Status-Badges und Pills für alle 3 Binärsensoren
-- Visueller Card-Editor
-- Dark/Light Theme über HA CSS-Variablen
+The card takes its colours from Home Assistant's CSS variables — `--card-background-color`,
+`--primary-text-color`, `--secondary-text-color` and `--ha-card-border-radius` — and falls back to
+its own dark palette if a theme does not define them. Status colours (green, amber, red) are fixed
+so that "over the limit" reads the same in every theme.
 
 ---
 
-## 📄 Lizenz
+## FAQ
 
-MIT License
+**The card says the integration is missing, but I installed it.**
+Check that `entity_prefix` matches your entities. `sensor.leasing_vw_golf_km_absolviert` needs the
+prefix `leasing_vw_golf`, not `leasing`.
+
+**Nothing changed after updating.**
+Lovelace resources are cached aggressively. Reload with Ctrl + Shift + R; on iOS, clear the
+companion app's frontend cache.
+
+**Can I use this card without the integration?**
+No. It reads that integration's specific entities and does not compute anything itself.
+
+**Why is the needle to the left of the tick mark a good thing?**
+The tick is where the contract says you should be, the needle is where you actually are. Needle to
+the left means you have driven fewer kilometres than the contract allowed by now.
+
+---
+
+## Related
+
+- **[Leasing KM Calculator](https://github.com/sphings79/km_leasing_check_ha)** — the integration
+  that provides the entities this card renders.
+- **[More projects and tools](https://sphings-dev.de/)**
+
+---
+
+## Changelog
+
+### 1.0.0
+- First release
+- Semicircular gauge with actual needle and target tick
+- Layered progress bar for actual vs. target
+- Full metric overview in four sections
+- Status badges and pills for all three binary sensors
+- Visual card editor
+- Dark/light theming via Home Assistant CSS variables
+
+---
+
+## License
+
+MIT.
