@@ -231,7 +231,7 @@ the left means you have driven fewer kilometres than the contract allowed by now
 
 ---
 
-## ☕ Support
+## Sponsor this project
 
 These tools are built and maintained in my free time, and they stay free, open and cloud-free.
 If one of them saved you an afternoon, you can [buy me a coffee](https://buymeacoffee.com/sphings).
