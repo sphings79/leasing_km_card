@@ -1,3 +1,15 @@
+> [!IMPORTANT]
+> **Dieses Repository ist archiviert. Die Karte kommt jetzt mit der Integration.**
+>
+> Die Leasing KM Card ist nach
+> [sphings79/leasing-km-home-assistant](https://github.com/sphings79/leasing-km-home-assistant)
+> umgezogen. Die Integration liefert sie aus und trägt die Lovelace-Ressource selbst ein, es gibt
+> also nichts mehr separat zu installieren.
+>
+> **Zum Umstieg:** die Integration installieren oder aktualisieren, danach dieses Repository aus
+> HACS entfernen und den alten Ressourceneintrag auf `leasing-km-card.js` löschen. Deine Dashboards
+> laufen weiter, der Kartentyp bleibt `custom:leasing-km-card`.
+
 <div align="center">
 
 <img src="assets/banner.svg" alt="Leasing KM Card — Lovelace-Karte für Home Assistant mit Gauge, Soll-Ist-Vergleich und Prognose" width="100%">
